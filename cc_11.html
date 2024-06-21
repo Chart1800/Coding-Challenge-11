@@ -1,0 +1,90 @@
+<!-- This program displays a bar graph with mouseover effects and a transition-->
+
+<!-- U94741303 -->
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Dynamic Bar Chart</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        /*Default bar color */
+        rect {
+            fill: steelblue;
+        }
+        /* Text font, color, size */
+        text {
+            font-family: 'Arial', sans-serif;
+            font-size: 14px;
+            fill: white;
+            text-anchor: end;
+        }
+        /* Graph background color */
+        svg {
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <h1> Dynamic Bar Chart </h1>
+    <script>
+
+        // Data for bars
+        const dataset = [100, 420, 230, 850, 560, 925];
+
+        // Initialize SVG container with dimensions
+        const svgWidth = 500;
+        const barHeight = 20;
+        const margin = 1;
+        const svgHeight = (barHeight + margin) * dataset.length;
+
+        const svg = d3.select("body")
+            .append("svg")
+            .attr("width", svgWidth)
+            .attr("height", svgHeight);
+
+        // Configure linear scalar for bar widths
+        const xScale = d3.scaleLinear()
+            .domain([0, d3.max(dataset)])
+            .range([50, svgWidth]);
+
+        // Create groups for each data point
+        const barGroup = svg.selectAll("g")
+            .data(dataset)
+            .enter()
+            .append("g")
+            .attr("transform", (d, i) => `translate(0, ${i * (barHeight + margin)})`);
+
+        // Draw bars
+        barGroup.append("rect")
+            // Start with no bars
+            .attr("width", 0)
+            .attr("height", barHeight - margin)
+            .style("fill", "steelblue")
+            // Transition to fill in bars
+            .transition()
+            .duration(2000)
+            .attr("width", d => xScale(d));
+
+        // Add text labels
+        barGroup.append("text")
+            // Center text on bar
+            .attr("x", d => xScale(d) - 3)
+            .attr("y", barHeight / 2)
+            .attr("dy", "0.35em")
+            .text(d => d)
+            .style("fill", "white");
+
+        // Add mouseover color change
+        barGroup.on("mouseover", function () {
+            d3.select(this).select("rect").style("fill", "firebrick");
+        })
+            .on("mouseout", function () {
+                d3.select(this).select("rect").style("fill", "steelblue");
+            });
+
+    </script>
+</body>
+</html>
